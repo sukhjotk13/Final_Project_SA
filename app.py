@@ -11,16 +11,17 @@ best_rf_model = joblib.load("random_forest_model.pkl")
 # Load the scaler used during training
 scaler = joblib.load("scaler.pkl")  # Ensure you save your scaler as scaler.pkl when training
 
-# Function for prediction
+# Function for prediction with RNN
 def predict_with_rnn(input_data):
     # Reshape input for the RNN model (samples, timesteps, features)
-    input_array = np.array(input_data).reshape(1, 1, -1)
+    input_array = np.array(input_data).reshape(1, 1, -1)  # (1, 1, n_features)
     log_sales_prediction = best_modelRNN.predict(input_array)[0]
     return math.exp(log_sales_prediction)  # Convert log scale back to original scale
 
+# Function for prediction with Random Forest
 def predict_with_rf(input_data):
     # Reshape input for Random Forest model (flat input)
-    input_array = np.array(input_data).reshape(1, -1)
+    input_array = np.array(input_data).reshape(1, -1)  # (1, n_features)
     log_sales_prediction = best_rf_model.predict(input_array)[0]
     return math.exp(log_sales_prediction)  # Convert log scale back to original scale
 
@@ -51,12 +52,13 @@ type_store = type_store_mapping[type_store]
 raw_input_data = [temperature, fuel_price, cpi, unemployment, dept, size, is_holiday, type_store]
 
 # Scale the input features using the same scaler used during training
-scaled_input_data = scaler.transform([raw_input_data]).flatten()
+scaled_input_data = scaler.transform([raw_input_data])  # Ensure input is 2D (1, n_features)
+scaled_input_data = scaled_input_data.flatten()  # Flattened for RandomForest
 
 if st.button("Predict"):
     if selected_model == "RNN Model":
-        prediction = predict_with_rnn(scaled_input_data)
+        prediction = predict_with_rnn(scaled_input_data)  # RNN needs (1, 1, n_features)
     elif selected_model == "Random Forest Model":
-        prediction = predict_with_rf(scaled_input_data)
+        prediction = predict_with_rf(scaled_input_data)  # RandomForest needs (1, n_features)
 
     st.success(f"Predicted Weekly Sales: ${prediction:,.2f}")
