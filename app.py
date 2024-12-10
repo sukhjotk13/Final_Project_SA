@@ -5,11 +5,11 @@ from sklearn.preprocessing import MinMaxScaler
 import math
 
 # Load your pre-trained models
-best_modelRNN = joblib.load(r"C:\Users\acer\best_modelRNN.pkl")
-best_rf_model = joblib.load(r"C:\Users\acer\best_rf_model.pkl")
+best_modelRNN = joblib.load("best_modelRNN.pkl")
+best_rf_model = joblib.load("random_forest_model.pkl")
 
 # Load the scaler used during training
-scaler = joblib.load(r"C:\Users\acer\scaler.pkl")  # Ensure you save your scaler as scaler.pkl when training
+scaler = joblib.load("scaler.pkl")  # Ensure you save your scaler as scaler.pkl when training
 
 # Function for prediction
 def predict_with_rnn(input_data):
